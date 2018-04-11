@@ -19,18 +19,17 @@ import cz.msebera.android.httpclient.client.ClientProtocolException;
 import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import dk.adamino.largenumbersasync.IAsyncCalculationCallback;
-import dk.adamino.largenumbersasync.OfflineException;
 
 /**
  * Created by Adamino.
  */
 public class AsyncLargeNumberCalculatorDAO implements IAsyncLargeNumberCalculatorDAO {
-    public static final String TAG = "DAL";
+    static final String TAG = "DAL";
 
-    public static final String REST_API_URL = "http://oleeriksen.dk/php/addm.php?";
-    public static final String NUMBER1_PREFIX = "p1=";
-    public static final String NUMBER_SEPARATOR = "&";
-    public static final String NUMBER2_PREFIX = "p2=";
+    private static final String REST_API_URL = "http://oleeriksen.dk/php/addm.php?";
+    private static final String NUMBER1_PREFIX = "p1=";
+    private static final String NUMBER_SEPARATOR = "&";
+    private static final String NUMBER2_PREFIX = "p2=";
 
     @Override
     public void getAdditionAsync(IAsyncCalculationCallback callback, long number1, long number2) {
@@ -60,7 +59,7 @@ public class AsyncLargeNumberCalculatorDAO implements IAsyncLargeNumberCalculato
             try {
                 String restResult = GET(strings[0]);
                 if (restResult == null) {
-                    throw new OfflineException("Result was null");
+                    throw new Exception("Result was null");
                 } else {
                     Log.d(TAG, restResult);
                     return jsonStringToLong(restResult);
