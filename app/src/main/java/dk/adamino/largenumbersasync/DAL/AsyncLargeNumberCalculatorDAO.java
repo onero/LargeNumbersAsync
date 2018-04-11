@@ -19,6 +19,7 @@ import cz.msebera.android.httpclient.client.ClientProtocolException;
 import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import dk.adamino.largenumbersasync.IAsyncCalculationCallback;
+import dk.adamino.largenumbersasync.OfflineException;
 
 /**
  * Created by Adamino.
@@ -40,6 +41,8 @@ public class AsyncLargeNumberCalculatorDAO implements IAsyncLargeNumberCalculato
     }
 
     private static class RemoteCalculationTask extends AsyncTask<String, Integer, Long> {
+        public static final int ERROR_RESULT = -1;
+
         private IAsyncCalculationCallback mCallback;
 
         @Override
@@ -53,22 +56,23 @@ public class AsyncLargeNumberCalculatorDAO implements IAsyncLargeNumberCalculato
 
         @Override
         protected Long doInBackground(String... strings) {
-            long result = 0;
+            long result = ERROR_RESULT;
             try {
                 String restResult = GET(strings[0]);
                 if (restResult == null) {
-                    return 0L;
+                    throw new OfflineException("Result was null");
                 } else {
                     Log.d(TAG, restResult);
                     return jsonStringToLong(restResult);
                 }
             } catch (Exception e) {
-                Log.d(TAG, "General exception in loadAll: " + e.getMessage());
+                Log.e(TAG, e.getMessage());
             }
             return result;
         }
 
         private long jsonStringToLong(String result) throws Exception {
+            long resultAsLong;
             if (result.startsWith("error")) {
                 Log.d(TAG, "Error: " + result);
                 throw new Exception();
@@ -82,12 +86,13 @@ public class AsyncLargeNumberCalculatorDAO implements IAsyncLargeNumberCalculato
             try {
                 calculationResult = new JSONObject(result);
                 String resultAsString = calculationResult.getString("result");
-                return Long.parseLong(resultAsString);
+                resultAsLong = Long.parseLong(resultAsString);
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                throw new Exception();
             }
-            return 0;
+            return resultAsLong;
         }
 
         /**

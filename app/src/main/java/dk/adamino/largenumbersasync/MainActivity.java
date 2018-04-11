@@ -2,6 +2,7 @@ package dk.adamino.largenumbersasync;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -12,6 +13,7 @@ import dk.adamino.largenumbersasync.BLL.LargeNumberCalculator;
 
 public class MainActivity extends AppCompatActivity implements IAsyncCalculationCallback {
 
+    public static final int ERROR_RESULT = -1;
     private EditText mNumber1, mNumber2;
     private TextView mResult;
     private ProgressBar mProgressBar;
@@ -45,9 +47,8 @@ public class MainActivity extends AppCompatActivity implements IAsyncCalculation
             mLargeNumberCalculator.addAsync(this, input1, input2);
             mProgressBar.setVisibility(View.VISIBLE);
             mProgressBar.animate();
-        } catch (Exception e) {
-            long result = mLargeNumberCalculator.add(input1, input2);
-            mResult.setText(result + "");
+        } catch (Exception oe) {
+            Log.e("GUI", oe.getMessage());
         }
     }
 
@@ -72,7 +73,13 @@ public class MainActivity extends AppCompatActivity implements IAsyncCalculation
 
     @Override
     public void onResult(long result) {
-        mResult.setText(result + "");
-        mProgressBar.setVisibility(View.INVISIBLE);
+        if (result != ERROR_RESULT) {
+            mResult.setText(result + "");
+            mProgressBar.setVisibility(View.INVISIBLE);
+
+        } else {
+            long offlineResult = mLargeNumberCalculator.add(getLong(mNumber1), getLong(mNumber2));
+            mResult.setText("Offline result: " + offlineResult);
+        }
     }
 }
