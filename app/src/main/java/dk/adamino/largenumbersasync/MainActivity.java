@@ -9,7 +9,7 @@ import android.widget.TextView;
 import dk.adamino.largenumbersasync.BLL.ILargeNumberCalculator;
 import dk.adamino.largenumbersasync.BLL.LargeNumberCalculator;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IAsyncCalculationCallback {
 
     private EditText mNumber1, mNumber2;
     private TextView mResult;
@@ -31,23 +31,28 @@ public class MainActivity extends AppCompatActivity {
     public void onCalculate(View view) {
         long input1 = 0, input2 = 0;
         if (hasInput(mNumber1)) {
-            input1 = getLong(mNumber1);
+            input1 = getInt(mNumber1);
         }
         if (hasInput(mNumber2)) {
-            input2 = getLong(mNumber2);
+            input2 = getInt(mNumber2);
         }
 
-        long result = mLargeNumberCalculator.add(input1, input2);
-        mResult.setText(result + "");
+        try {
+            mLargeNumberCalculator.addAsync(this, input1, input2);
+        } catch (Exception e) {
+            long result = mLargeNumberCalculator.add(input1, input2);
+            mResult.setText(result + "");
+        }
     }
 
+
     /***
-     * Get long from input
+     * Get int from input
      * @param numberInput
-     * @return input as long
+     * @return input as int
      */
-    private long getLong(TextView numberInput) {
-        return Long.parseLong(numberInput.getText().toString());
+    private int getInt(TextView numberInput) {
+        return Integer.parseInt(numberInput.getText().toString());
     }
 
     /***
@@ -57,5 +62,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private boolean hasInput(TextView numberInput) {
         return numberInput.getText().length() > 0;
+    }
+
+    @Override
+    public void onResult(long result) {
+        mResult.setText(result + "");
     }
 }

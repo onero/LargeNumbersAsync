@@ -22,8 +22,8 @@ public class LargeNumberCalculatorShould {
 
     @Test
     public void addTwoLongs() {
-        long number1 = 999_999_999;
-        long number2 = 999_999_999;
+        int number1 = 999_999_999;
+        int number2 = 999_999_999;
 
         long expextedResult = number1 + number2;
         long result = mLargeNumberCalculator.add(number1, number2);
