@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Large Numbers Async</string>
+    <string name="error_enter_numbers">Please enter numbers!</string>
 </resources>
